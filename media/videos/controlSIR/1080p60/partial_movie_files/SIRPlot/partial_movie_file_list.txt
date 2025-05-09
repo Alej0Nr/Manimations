@@ -1,0 +1,5 @@
+# This file is used internally by FFMPEG.
+file 'file:X:/GitHub/Manimations/media/videos/controlSIR/1080p60/partial_movie_files/SIRPlot/3977891868_2313316655_2166040305.mp4'
+file 'file:X:/GitHub/Manimations/media/videos/controlSIR/1080p60/partial_movie_files/SIRPlot/2852726489_1266876271_660532900.mp4'
+file 'file:X:/GitHub/Manimations/media/videos/controlSIR/1080p60/partial_movie_files/SIRPlot/2852726489_1023780425_2262481088.mp4'
+file 'file:X:/GitHub/Manimations/media/videos/controlSIR/1080p60/partial_movie_files/SIRPlot/2852726489_2015106682_3734567196.mp4'
