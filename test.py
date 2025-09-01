@@ -17,24 +17,30 @@ class SIRPlot(Scene):
             # x_length=10,
             axis_config={"color": GREEN},
             x_axis_config={
-                "numbers_to_include": np.arange(0, 12.01, 1),
-                "numbers_with_elongated_ticks": np.arange(0, 12.01, 1),
+                "numbers_to_include": np.arange(0.0, 12.01, 1),
+                "numbers_with_elongated_ticks": np.append(np.arange(0.0, 12.01, 0.5), [desde, hasta]),
             },
             y_axis_config={
-                "numbers_to_include": np.arange(0, 1000.01, 200),
-                "numbers_with_elongated_ticks": np.arange(0, 1000.01, 200),
+                "numbers_to_include": np.arange(0.0, 1000.01, 200),
+                "numbers_with_elongated_ticks": np.arange(0.0, 1000.01, 200),
 
             },
             tips=False,
         )
-
-        self.add(axes)
+        for x_val, tick_color in [(desde, PINK), (hasta, PINK)]:
+            tick = axes.x_axis.get_tick(x_val)
+            tick.set_color(tick_color)
+            axes.add(tick)  # Añadirlo manualmente si no se dibuja automáticamente
+        start = axes.c2p(desde, 0)
+        end = axes.c2p(hasta, 0)
+        segmento_control = Line(start, end, color=LIGHT_PINK, stroke_width=4)
+        self.add(axes,segmento_control)
         label1 = Tex(r"$S(t)$", color=BLUE,font_size=24).to_edge(UP)
         label2 = Tex(r"$I(t)$", color=RED,font_size=24).next_to(label1, RIGHT, aligned_edge=LEFT,buff=.5)
         label3 = Tex(r"$R(t)$", color=YELLOW,font_size=24).next_to(label2, RIGHT, aligned_edge=LEFT,buff=.5)
         label4 = Tex(r"$\beta = $"+f" {beta}",font_size=24).next_to(label3, RIGHT, aligned_edge=LEFT,buff=.5)
         label5 = Tex(r"$\nu = $"+f" {nu}",font_size=24).next_to(label4, RIGHT, aligned_edge=LEFT,buff=.75)
-        label6 = Tex(r"$u = $"+f" {u}",font_size=24).next_to(label5, RIGHT, aligned_edge=LEFT,buff=.5)
+        label6 = Tex(r"$u = $"+f" {u}", color= PINK, font_size=24).next_to(label5, RIGHT, aligned_edge=LEFT,buff=.5)
         self.add(label1,label2,label3,label4,label5,label6)
 
         def SIR(t, z, nu, beta, u=0):
@@ -58,25 +64,21 @@ class SIRPlot(Scene):
             z0=[S_vals[-1],I_vals[-1],R_vals[-1]]
             return [z0, curvas]
         
-        a, curvas = ploter([0,desde],[999,1,0])
-        S_curve = VMobject(color=BLUE).set_points_smoothly(curvas[0])
-        I_curve = VMobject(color=RED).set_points_smoothly(curvas[1])
-        R_curve = VMobject(color=YELLOW).set_points_smoothly(curvas[2])
-        curvas0 = AnimationGroup(Create(S_curve),Create(I_curve),Create(R_curve),lag_ratio=0)
+        a, puntos0 = ploter([0,desde],[999,1,0])
+        a, puntos1 = ploter([desde,hasta],a,control=True)
+        a, puntos2 = ploter([hasta,12],a)
+        puntosS = [*puntos0[0],*puntos1[0],*puntos2[0]]
+        puntosI = [*puntos0[1],*puntos1[1],*puntos2[1]]
+        puntosR = [*puntos0[2],*puntos1[2],*puntos2[2]]
 
-        a, curvas = ploter([desde,hasta],a,control=True)
-        S_curve = VMobject(color=TEAL).set_points_smoothly(curvas[0])
-        I_curve = VMobject(color=MAROON).set_points_smoothly(curvas[1])
-        R_curve = VMobject(color=GOLD).set_points_smoothly(curvas[2])
-        a, curvas = ploter([hasta,12],a)
-        curvas1 = AnimationGroup(Create(S_curve),Create(I_curve),Create(R_curve),lag_ratio=0)
-
-        S_curve = VMobject(color=BLUE).set_points_smoothly(curvas[0])
-        I_curve = VMobject(color=RED).set_points_smoothly(curvas[1])
-        R_curve = VMobject(color=YELLOW).set_points_smoothly(curvas[2])
-        curvas2 = AnimationGroup(Create(S_curve),Create(I_curve),Create(R_curve),lag_ratio=0)
-
-        self.play(curvas0,run_time=5, rate_func = linear)
-        self.play(curvas1,run_time=3, rate_func = linear)
-        self.play(curvas2,run_time=5, rate_func = linear)
+        S_curve = VMobject(color=BLUE).set_points_smoothly(puntosS)
+        I_curve = VMobject(color=RED).set_points_smoothly(puntosI)
+        R_curve = VMobject(color=YELLOW).set_points_smoothly(puntosR)
+        animacion = AnimationGroup(Create(S_curve),Create(I_curve),Create(R_curve),lag_ratio=0)
+        self.play(animacion, run_time=15, rate_func= linear)
         self.wait(5)
+
+        # self.play(curvas0,run_time=5)
+        # self.play(curvas1,run_time=3)
+        # self.play(curvas2,run_time=5)
+        # self.wait(5)
